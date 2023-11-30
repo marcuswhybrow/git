@@ -1,0 +1,54 @@
+{
+  description = "Git cli configured by Marcus";
+
+  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+  outputs = inputs: let 
+    pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
+    delta = "${pkgs.delta}/bin/delta";
+    gh = "${pkgs.gh}/bin/gh";
+    neovim = "${pkgs.neovim}/bin/neovim";
+    config = pkgs.writeTextDir "git/config" ''
+      [core]
+        editor = ${neovim}
+        pager = ${delta}
+
+      [credential "https://github.com"]
+        helper = ${gh} auth git-credential
+
+      [delta]
+        light = true
+        navigate = true
+
+      [diff]
+        colorMoved = default
+
+      [merge]
+        conflictstyle = diff3
+
+      [interactive]
+        diffFilter = ${delta} --color-only
+
+      [user]
+        name = "Marcus Whybrow"
+        email = "marcus@whybrow.uk"
+
+      [init]
+        defaultBranch = "main"
+    '';
+    wrapper = pkgs.runCommand "git" {
+      nativeBuildInputs = [ pkgs.makeWrapper ];
+    } ''
+      mkdir --parents $out/bin
+      makeWrapper ${pkgs.git}/bin/git $out/bin/git \
+        --set XDG_CONFIG_HOME ${config}
+    '';
+  in {
+    packages.x86_64-linux.git = pkgs.symlinkJoin {
+      name = "git";
+      paths = [ wrapper pkgs.git ]; # First packages ./bin/git takes precidence
+    };
+
+    packages.x86_64-linux.default = inputs.self.packages.x86_64-linux.git;
+  };
+}
