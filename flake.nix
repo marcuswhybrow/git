@@ -1,13 +1,16 @@
 {
   description = "Git cli configured by Marcus";
 
-  inputs.nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    neovim.url = "github:marcuswhybrow/neovim";
+  };
 
   outputs = inputs: let 
     pkgs = inputs.nixpkgs.legacyPackages.x86_64-linux;
     delta = "${pkgs.delta}/bin/delta";
     gh = "${pkgs.gh}/bin/gh";
-    neovim = "${pkgs.neovim}/bin/neovim";
+    neovim = "${inputs.neovim.packages.x86_64-linux.nvim}/bin/nvim";
     config = pkgs.writeTextDir "git/config" ''
       [core]
         editor = ${neovim}
