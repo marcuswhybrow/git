@@ -52,6 +52,18 @@
       paths = [ wrapper pkgs.git ]; # First packages ./bin/git takes precidence
     };
 
+    packages.x86_64-linux.fish-abbreviations = let 
+      git = inputs.self.packages.x86_64-linux.git;
+    in pkgs.writeTextDir "share/fish/vendor_conf.d/git.fish" ''
+      if status is-interactive
+        abbr --add gs ${git} status
+        abbr --add ga ${git} add .
+        abbr --add gc ${git} commit
+        abbr --add gp ${git} push
+        abbr --add gd ${git} diff
+      end
+    '';
+
     packages.x86_64-linux.default = inputs.self.packages.x86_64-linux.git;
   };
 }
