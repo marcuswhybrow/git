@@ -53,7 +53,7 @@
     };
 
     packages.x86_64-linux.fish-abbreviations = let 
-      git = inputs.self.packages.x86_64-linux.git;
+      git = "${inputs.self.packages.x86_64-linux.git}/bin/git";
     in pkgs.writeTextDir "share/fish/vendor_conf.d/git.fish" ''
       if status is-interactive
         abbr --add gs ${git} status
