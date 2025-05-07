@@ -20,7 +20,7 @@
         helper = ${gh} auth git-credential
 
       [delta]
-        light = true
+        light = false
         navigate = true
 
       [diff]
